@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: actividad_db
     volumes:
-      # El orden numérico asegura que se ejecuten secuencialmente
+      
       - ./db/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
       - ./db/seed.sql:/docker-entrypoint-initdb.d/02_seed.sql
       - ./db/migrate.sql:/docker-entrypoint-initdb.d/03_migrate.sql
@@ -19,7 +19,7 @@ services:
     ports:
       - "5432:5432"
 
-  web:
+  web:  
     build: ./app-next
     container_name: nextjs_container
     ports:
@@ -28,7 +28,7 @@ services:
       # Conexión segura usando 'app_user' creado en roles.sql
       DATABASE_URL: postgres://app_user:secure_pass_123@db:5432/actividad_db
     volumes:
-      # Sincroniza tu carpeta local con el contenedor (Hot Reload)
+      
       - ./app-next:/app
       # Evita que se borren los node_modules del contenedor
       - /app/node_modules

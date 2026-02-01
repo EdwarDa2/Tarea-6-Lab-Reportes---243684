@@ -62,7 +62,7 @@ SELECT
     END AS salud_inventario
 FROM productos p
 LEFT JOIN orden_detalles od ON p.id = od.producto_id
-GROUP BY p.id, p.codigo, p.nombre, p.stockz 
+GROUP BY p.id, p.codigo, p.nombre, p.stock
 HAVING p.stock < 100; -- Mostrar solo productos con stock menor a 100
 
 -- VERIFY: SELECT * FROM vw_stock_critico ORDER BY stock ASC;

@@ -1,14 +1,23 @@
-// app-next/lib/db.ts
 import { Pool } from 'pg';
 
+let connectionString = process.env.DATABASE_URL;
+
+if (!connectionString) {
+  connectionString = 'postgres://postgres:postgres@localhost:5432/actividad_db';
+}
+
+
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString,
 });
 
 export const query = async (text: string, params?: any[]) => {
-  const start = Date.now();
-  const res = await pool.query(text, params);
-  const duration = Date.now() - start;
-  console.log(`Query: ${text} (${duration}ms)`);
-  return res;
+  try {
+    const res = await pool.query(text, params);
+    return res;
+  } catch (error) {
+    console.error('❌ Error ejecutando query:', text);
+    throw error;
+  }
 };

@@ -1,10 +1,3 @@
--- ============================================
--- SCHEMA.SQL - Definición de Estructura
--- ============================================
--- Equipo: [Nombre del equipo]
--- Fecha: [Fecha]
--- Dominio: [Describir el dominio modelado]
--- ============================================
 
 -- Limpiar tablas si existen (útil para desarrollo)
 -- CUIDADO: Esto borra todos los datos

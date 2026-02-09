@@ -1,0 +1,5 @@
+[00:00:02.861] Server  LOG     ✓ Ready in 2.5s
+[00:00:09.981] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:19.282] Server  ERROR   ❌ Error ejecutando query: "SELECT SUM(ingreso_total) as gran_total FROM vw_ventas_categoria"
+[00:00:19.337] Server  ERROR   ⨯ Error: getaddrinfo EAI_AGAIN db
+[00:00:19.529] Browser ERROR   uncaughtError: Error: getaddrinfo EAI_AGAIN db

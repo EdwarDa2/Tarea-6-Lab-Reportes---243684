@@ -1,13 +1,12 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:15-alpine
     container_name: tarea6
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: actividad_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB} 
+      
     volumes:
       
       - ./db/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
@@ -17,7 +16,7 @@ services:
       - ./db/indexes.sql:/docker-entrypoint-initdb.d/05_indexes.sql
       - ./db/roles.sql:/docker-entrypoint-initdb.d/06_roles.sql
     ports:
-      - "5432:5432"
+      - "5433:5432"
 
   web:  
     build: ./app-next
@@ -25,12 +24,11 @@ services:
     ports:
       - "3000:3000"
     environment:
-      # Conexión segura usando 'app_user' creado en roles.sql
-      DATABASE_URL: postgres://app_user:secure_pass_123@db:5432/actividad_db
+      
+      DATABASE_URL: ${DATABASE_URL}
     volumes:
       
       - ./app-next:/app
-      # Evita que se borren los node_modules del contenedor
       - /app/node_modules
     depends_on:
       - db

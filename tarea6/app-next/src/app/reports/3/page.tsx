@@ -1,27 +1,16 @@
-import { query } from '../../lib/db';
 import Link from 'next/link';
-
-interface StockProducto {
-  codigo: string;
-  nombre: string;
-  stock: number;
-  total_historico_ventas: number;
-  salud_inventario: string;
-}
-
-async function getStockCritico() {
-  const result = await query("SELECT * FROM vw_stock_critico ORDER BY stock ASC");
-  return result.rows as StockProducto[];
-}
+import { getStockCritico } from '../../api/services/reporte3Service';
 
 export default async function Reporte3() {
   const productos = await getStockCritico();
 
   return (
     <main>
-      <Link href="/" style={{ color: 'blue', marginBottom: '20px', display: 'block' }}>← Volver al Dashboard</Link>
+      <Link href="/" style={{ color: 'blue', marginBottom: '20px', display: 'block' }}>
+        ← Volver al Dashboard
+      </Link>
       
-      <h1>Reporte 3: Alerta de Stock</h1>
+      <h1>⚠️ Reporte 3: Alerta de Stock</h1>
       <p>Productos con niveles bajos de inventario (Lógica CASE).</p>
 
       <table>

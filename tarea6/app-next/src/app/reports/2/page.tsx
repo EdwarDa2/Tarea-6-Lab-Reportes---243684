@@ -1,20 +1,12 @@
-import { query } from '../../lib/db';
 import Link from 'next/link';
 import { z } from 'zod';
+import { getClientesVip, type NivelCliente } from '../../api/services/reporte2Service';
 
 export const dynamic = 'force-dynamic';
 
 const filterSchema = z.object({
   nivel: z.enum(['Platino', 'Oro', 'Estandar']).optional(),
 });
-
-interface ClientVip {
-  nombre: string;
-  email: string;
-  total_ordenes: number;
-  gasto_historico: string;
-  nivel_cliente: string;
-}
 
 export default async function Reporte2({
   searchParams,
@@ -25,22 +17,13 @@ export default async function Reporte2({
   const parsed = filterSchema.safeParse(params);
   const nivelSeleccionado = parsed.success ? parsed.data.nivel : undefined;
 
-  let clientes: ClientVip[] = [];
-  
-  if (nivelSeleccionado) {
-    const result = await query(
-      "SELECT * FROM vw_clientes_vip WHERE nivel_cliente = $1 ORDER BY gasto_historico DESC",
-      [nivelSeleccionado]
-    );
-    clientes = result.rows as ClientVip[];
-  } else {
-    const result = await query("SELECT * FROM vw_clientes_vip ORDER BY gasto_historico DESC");
-    clientes = result.rows as ClientVip[];
-  }
+  const clientes = await getClientesVip(nivelSeleccionado as NivelCliente | undefined);
 
   return (
     <main>
-      <Link href="/" style={{ color: 'blue', marginBottom: '20px', display: 'block' }}>← Volver al Dashboard</Link>
+      <Link href="/" style={{ color: 'blue', marginBottom: '20px', display: 'block' }}>
+        ← Volver al Dashboard
+      </Link>
       
       <h1>💎 Reporte 2: Clientes VIP</h1>
       
@@ -73,7 +56,14 @@ export default async function Reporte2({
             <option value="Estandar">Estándar (&lt; $500)</option>
           </select>
 
-          <button type="submit" style={{ padding: '8px 15px', background: '#333', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+          <button type="submit" style={{ 
+            padding: '8px 15px', 
+            background: '#333', 
+            color: 'white', 
+            border: 'none', 
+            borderRadius: '4px', 
+            cursor: 'pointer' 
+          }}>
             Aplicar
           </button>
         </form>

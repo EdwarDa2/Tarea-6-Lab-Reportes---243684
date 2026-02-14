@@ -1,19 +1,12 @@
-import { query } from '../../lib/db';
 import Link from 'next/link';
 import { z } from 'zod';
+import { getReporteMensual } from '../../api/services/reporte4Service';
 
 export const dynamic = 'force-dynamic';
 
 const filterSchema = z.object({
   min: z.coerce.number().min(0).optional().default(0),
 });
-
-interface ReporteMensual {
-  mes_anio: string;
-  transacciones: number;
-  facturacion: string;
-  iva_estimado: number;
-}
 
 export default async function Reporte4({
   searchParams,
@@ -24,24 +17,21 @@ export default async function Reporte4({
   const parsed = filterSchema.safeParse(params);
   const minVentas = parsed.success ? parsed.data.min : 0;
 
-  const text = `
-    SELECT * FROM vw_reporte_mensual 
-    WHERE facturacion >= $1 
-    ORDER BY mes_anio DESC
-  `;
-  
-  const result = await query(text, [minVentas]);
-  const datos = result.rows as ReporteMensual[];
+  const datos = await getReporteMensual(minVentas);
 
   return (
     <main>
-      <Link href="/" style={{ color: 'blue', marginBottom: '20px', display: 'block' }}>← Volver al Dashboard</Link>
+      <Link href="/" style={{ color: 'blue', marginBottom: '20px', display: 'block' }}>
+        ← Volver al Dashboard
+      </Link>
       
       <h1>📅 Reporte 4: Desempeño Mensual</h1>
       
       <div style={{ background: '#f4f4f4', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
         <form style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-          <label htmlFor="min" style={{ fontWeight: 'bold' }}>Filtrar ventas mínimas ($):</label>
+          <label htmlFor="min" style={{ fontWeight: 'bold' }}>
+            Filtrar ventas mínimas ($):
+          </label>
           <input 
             type="number" 
             name="min" 
@@ -49,7 +39,14 @@ export default async function Reporte4({
             placeholder="Ej: 500"
             style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
           />
-          <button type="submit" style={{ padding: '8px 15px', background: '#333', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+          <button type="submit" style={{ 
+            padding: '8px 15px', 
+            background: '#333', 
+            color: 'white', 
+            border: 'none', 
+            borderRadius: '4px', 
+            cursor: 'pointer' 
+          }}>
             Filtrar
           </button>
           

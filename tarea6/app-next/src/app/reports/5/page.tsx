@@ -1,17 +1,9 @@
-import { query } from '../../lib/db';
 import Link from 'next/link';
+import { getTotalOrdenes, getOrdenesPaginadas } from '../../api/services/reporte5Service';
 
 export const dynamic = 'force-dynamic';
 
 const ITEMS_PER_PAGE = 5;
-
-interface HistorialOrden {
-  orden_ref: number;
-  cliente: string;
-  total: string;
-  created_at: Date;
-  ranking_gasto_cliente: number;
-}
 
 export default async function Reporte5({
   searchParams,
@@ -22,21 +14,15 @@ export default async function Reporte5({
   const currentPage = Number(params.page) || 1;
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
-  const countResult = await query('SELECT COUNT(*) as total FROM vw_historial_ordenes');
-  const totalItems = Number(countResult.rows[0]?.total || 0);
+  const totalItems = await getTotalOrdenes();
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
-
-  const text = `
-    SELECT * FROM vw_historial_ordenes 
-    ORDER BY created_at DESC, orden_ref ASC 
-    LIMIT $1 OFFSET $2
-  `;
-  const result = await query(text, [ITEMS_PER_PAGE, offset]);
-  const ordenes = result.rows as HistorialOrden[];
+  const ordenes = await getOrdenesPaginadas(ITEMS_PER_PAGE, offset);
 
   return (
     <main>
-      <Link href="/" style={{ color: 'blue', marginBottom: '20px', display: 'block' }}>← Volver al Dashboard</Link>
+      <Link href="/" style={{ color: 'blue', marginBottom: '20px', display: 'block' }}>
+        ← Volver al Dashboard
+      </Link>
       
       <h1>🏆 Reporte 5: Historial y Ranking</h1>
       
@@ -48,7 +34,9 @@ export default async function Reporte5({
         marginBottom: '20px',
         display: 'inline-block'
       }}>
-        <span style={{ display: 'block', fontSize: '0.9rem', color: '#0c4a6e' }}>Total de Órdenes Procesadas</span>
+        <span style={{ display: 'block', fontSize: '0.9rem', color: '#0c4a6e' }}>
+          Total de Órdenes Procesadas
+        </span>
         <strong style={{ fontSize: '1.5rem', color: '#0284c7' }}>{totalItems}</strong>
       </div>
 
@@ -85,14 +73,21 @@ export default async function Reporte5({
         </tbody>
       </table>
       
-      <div style={{ marginTop: '20px', display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'center' }}>
-        
+      <div style={{ 
+        marginTop: '20px', 
+        display: 'flex', 
+        gap: '10px', 
+        alignItems: 'center', 
+        justifyContent: 'center' 
+      }}>
         {currentPage > 1 ? (
           <Link href={`/reports/5?page=${currentPage - 1}`}>
             <button style={btnStyle}>⬅ Anterior</button>
           </Link>
         ) : (
-          <button style={{ ...btnStyle, opacity: 0.5, cursor: 'not-allowed' }} disabled>⬅ Anterior</button>
+          <button style={{ ...btnStyle, opacity: 0.5, cursor: 'not-allowed' }} disabled>
+            ⬅ Anterior
+          </button>
         )}
 
         <span style={{ fontWeight: 'bold' }}>
@@ -104,7 +99,9 @@ export default async function Reporte5({
             <button style={btnStyle}>Siguiente ➡</button>
           </Link>
         ) : (
-          <button style={{ ...btnStyle, opacity: 0.5, cursor: 'not-allowed' }} disabled>Siguiente ➡</button>
+          <button style={{ ...btnStyle, opacity: 0.5, cursor: 'not-allowed' }} disabled>
+            Siguiente ➡
+          </button>
         )}
       </div>
     </main>
